@@ -1,12 +1,7 @@
 import streamlit as st
-from openai import OpenAI
+import google.generativeai as genai
 from PIL import Image
-import base64
-import io
 
-# =====================================
-# 페이지 설정
-# =====================================
 st.set_page_config(
     page_title="AI Seller Studio",
     page_icon="🛒",
@@ -14,89 +9,52 @@ st.set_page_config(
 )
 
 st.title("🛒 AI Seller Studio")
-st.caption("사진 한 장으로 스마트스토어·쿠팡 상품 정보를 자동 생성합니다.")
+st.caption("사진 한 장으로 스마트스토어·쿠팡 상품을 자동 생성합니다.")
 
-# =====================================
-# OpenAI API
-# =====================================
+# Gemini API Key
 try:
-    client = OpenAI(
-        api_key=st.secrets["OPENAI_API_KEY"]
-    )
-except Exception:
-    st.error("❌ OPENAI_API_KEY가 Streamlit Secrets에 등록되어 있지 않습니다.")
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+except:
+    st.error("GEMINI_API_KEY가 등록되지 않았습니다.")
     st.stop()
 
-# =====================================
-# 이미지 업로드
-# =====================================
 uploaded_file = st.file_uploader(
     "상품 사진을 선택하세요",
     type=["jpg", "jpeg", "png"]
 )
 
-if uploaded_file is not None:
+if uploaded_file:
 
     image = Image.open(uploaded_file)
 
-    st.image(image, caption="업로드한 이미지", width=450)
+    st.image(image, width=350)
 
-    buffered = io.BytesIO()
-    image.save(buffered, format="PNG")
+    if st.button("🤖 AI 상품 생성"):
 
-    img_base64 = base64.b64encode(
-        buffered.getvalue()
-    ).decode("utf-8")
+        with st.spinner("AI가 분석중입니다..."):
 
-    if st.button("🤖 AI 상품 생성", use_container_width=True):
+            model = genai.GenerativeModel("gemini-2.5-flash")
 
-        with st.spinner("AI가 상품을 분석하는 중입니다..."):
+            prompt = """
+사진 속 상품을 분석하여 아래 형식으로 작성해줘.
 
-            try:
+1. 스마트스토어 상품명
 
-                response = client.responses.create(
-                    model="gpt-4.1-mini",
-                    input=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {
-                                    "type": "input_text",
-                                    "text": """
-너는 스마트스토어와 쿠팡 전문 MD이다.
+2. 쿠팡 상품명
 
-사진을 분석하여 아래 형식으로 작성해라.
+3. 태그 10개
 
-① 스마트스토어 상품명
+4. 상품 특징 5가지
 
-② 쿠팡 상품명
+5. 300자 상품설명
 
-③ 태그 10개
-
-④ 상품 특징 5가지
-
-⑤ 300자 상품설명
-
-출력은 보기 좋게 작성한다.
+한국어로 작성.
 """
-                                },
-                                {
-                                    "type": "input_image",
-                                    "image_url": f"data:image/png;base64,{img_base64}"
-                                }
-                            ]
-                        }
-                    ]
-                )
 
-                result = response.output_text
+            response = model.generate_content(
+                [prompt, image]
+            )
 
-                st.success("생성 완료!")
+            st.success("생성 완료!")
 
-                st.markdown(result)
-
-            except Exception as e:
-
-                st.error("오류가 발생했습니다.")
-
-                st.code(str(e))
+            st.markdown(response.text)
