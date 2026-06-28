@@ -5,7 +5,7 @@ import pandas as pd
 
 from parser import parse_result
 from price_calculator import calculate_price
-
+from translator import translate_detail
 
 # --------------------------
 # 페이지 설정
@@ -357,4 +357,41 @@ with right:
         disabled=True,
         key="next_step"
     )
-                             
+# --------------------------
+# 중국 상세페이지 번역
+# --------------------------
+
+st.divider()
+
+st.header("🇨🇳 중국 상세페이지 번역")
+
+china_text = st.text_area(
+    "중국어 내용을 붙여넣으세요",
+    height=250,
+    key="china_text"
+)
+
+if st.button(
+    "🇰🇷 한국어 번역",
+    use_container_width=True,
+    key="translate_button"
+):
+
+    if china_text.strip():
+
+        with st.spinner("번역중입니다..."):
+
+            korean = translate_detail(china_text)
+
+            st.subheader("번역 결과")
+
+            st.text_area(
+                "한국어",
+                value=korean,
+                height=350,
+                key="translated_text"
+            )
+
+    else:
+
+        st.warning("중국어를 입력하세요.")
