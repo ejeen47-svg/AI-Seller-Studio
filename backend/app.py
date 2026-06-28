@@ -6,7 +6,7 @@ import pandas as pd
 from parser import parse_result
 from price_calculator import calculate_price
 from translator import translate_detail
-
+from detail_page import make_detail_page
 # --------------------------
 # 페이지 설정
 # --------------------------
@@ -395,3 +395,43 @@ if st.button(
     else:
 
         st.warning("중국어를 입력하세요.")
+   # ---------------------------------
+# AI 상세페이지 생성
+# ---------------------------------
+
+st.divider()
+
+st.header("📝 AI 상세페이지 생성")
+
+if st.button(
+    "📝 상세페이지 만들기",
+    use_container_width=True,
+    key="detail_page"
+):
+
+    if images:
+
+        with st.spinner("상세페이지 생성중입니다..."):
+
+            detail = make_detail_page(images)
+
+            st.subheader("생성된 상세페이지")
+
+            st.text_area(
+                "상세페이지",
+                value=detail,
+                height=500,
+                key="detail_result"
+            )
+
+            st.download_button(
+                "📄 상세페이지 TXT 다운로드",
+                data=detail,
+                file_name="상세페이지.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+
+    else:
+
+        st.warning("먼저 상품 이미지를 업로드하세요.")     
