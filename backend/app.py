@@ -7,6 +7,7 @@ from parser import parse_result
 from price_calculator import calculate_price
 from translator import translate_detail
 from detail_page import make_detail_page
+from ocr_reader import read_chinese
 # --------------------------
 # 페이지 설정
 # --------------------------
@@ -434,4 +435,49 @@ if st.button(
 
     else:
 
-        st.warning("먼저 상품 이미지를 업로드하세요.")     
+        st.warning("먼저 상품 이미지를 업로드하세요.") 
+  # ---------------------------------
+# OCR 중국어 추출
+# ---------------------------------
+
+st.header("🇨🇳 중국 상세페이지 번역")
+
+ocr_files = st.file_uploader(
+    "중국 상세페이지 이미지를 선택하세요",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=True,
+    key="ocr_upload"
+)
+
+if st.button("🤖 OCR + 자동번역", use_container_width=True):
+
+    if ocr_files:
+
+        imgs = [Image.open(f) for f in ocr_files]
+
+        with st.spinner("중국어를 읽고 번역하는 중..."):
+
+            chinese = read_chinese(imgs)
+
+            korean = translate_detail(chinese)
+
+        st.subheader("중국어")
+
+        st.text_area(
+            "",
+            chinese,
+            height=250,
+            key="ocr_chinese"
+        )
+
+        st.subheader("한국어")
+
+        st.text_area(
+            "",
+            korean,
+            height=350,
+            key="ocr_korean"
+        )
+
+    else:
+        st.warning("이미지를 업로드하세요.")
