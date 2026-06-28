@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 from PIL import Image
-
+import pandas as pd
 # ------------------------
 # 기본 설정
 # ------------------------
@@ -102,10 +102,29 @@ if uploaded_files:
 
             st.success("생성 완료!")
 
-            st.subheader("📋 AI 생성 결과")
+            st.success("생성 완료!")
 
-            st.text_area(
-                "결과",
-                value=result,
-                height=600
-            )
+st.subheader("📋 AI 생성 결과")
+
+st.text_area(
+    "결과",
+    result,
+    height=500
+)
+
+st.download_button(
+    "📄 TXT 다운로드",
+    result,
+    file_name="상품정보.txt"
+)
+
+df = pd.DataFrame({
+    "내용":[result]
+})
+
+st.download_button(
+    "📊 엑셀 다운로드",
+    df.to_csv(index=False),
+    file_name="상품정보.csv",
+    mime="text/csv"
+)
