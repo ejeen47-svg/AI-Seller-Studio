@@ -18,15 +18,20 @@ except:
     st.error("GEMINI_API_KEY가 등록되지 않았습니다.")
     st.stop()
 
-uploaded_file = st.file_uploader(
-    "상품 사진을 선택하세요",
-    type=["jpg", "jpeg", "png"]
+uploaded_files = st.file_uploader(
+    "상품 사진을 선택하세요 (최대 10장)",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=True
 )
 
-if uploaded_file:
+if uploaded_files:
 
-    image = Image.open(uploaded_file)
+   images = []
 
+for file in uploaded_files:
+    image = Image.open(file)
+    images.append(image)
+    st.image(image, width=250)
     st.image(image, width=350)
 
     if st.button("🤖 AI 상품 생성"):
