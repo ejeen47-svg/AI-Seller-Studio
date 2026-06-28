@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 import pandas as pd
-
+from parser import parse_result
 # -----------------------------
 # 페이지 설정
 # -----------------------------
@@ -97,18 +97,31 @@ if uploaded_files:
             response = model.generate_content([prompt] + images)
 
             result = response.text
-
+            data = parse_result(result)
             st.success("생성이 완료되었습니다!")
 
             st.divider()
+            
+            st.subheader("🛒 스마트스토어 상품명")
+            st.text_input("", data["smartstore_title"])
 
-            st.subheader("📋 AI 생성 결과")
+            st.subheader("📦 쿠팡 상품명")
+            st.text_input("", data["coupang_title"])
 
-            st.text_area(
-                "결과",
-                value=result,
-                height=500
-            )
+            st.subheader("🏷 태그")
+            st.text_area("", data["tags"], height=100)
+
+            st.subheader("🎨 색상")
+            st.text_area("", data["color"], height=80)
+
+            st.subheader("⚙ 옵션")
+            st.text_area("", data["option"], height=80)
+
+            st.subheader("📏 사이즈")
+            st.text_area("", data["size"], height=80)
+
+            st.subheader("📝 상품설명")
+            st.text_area("", data["description"], height=250)
 
             st.download_button(
                 label="📄 TXT 다운로드",
