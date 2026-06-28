@@ -40,19 +40,43 @@ if uploaded_files:
             model = genai.GenerativeModel("gemini-2.5-flash")
 
             prompt = """
-사진 속 상품들을 종합 분석하여 아래 형식으로 작성해줘.
+사진 속 상품들을 모두 분석하여 반드시 아래 형식만 출력하세요.
 
-1. 스마트스토어 상품명
+### 스마트스토어 상품명
+(한 줄)
 
-2. 쿠팡 상품명
+### 쿠팡 상품명
+(한 줄)
 
-3. 태그 10개
+### 태그
+태그1,태그2,태그3,태그4,태그5,태그6,태그7,태그8,태그9,태그10
 
-4. 상품 특징 5가지
+### 색상
+...
 
-5. 300자 상품설명
+### 옵션
+...
 
-한국어로 작성.
+### 사이즈
+...
+
+### 재질
+...
+
+### 구성품
+...
+
+### 상품특징
+- 특징1
+- 특징2
+- 특징3
+- 특징4
+- 특징5
+
+### 상품설명
+300자 정도 작성.
+
+반드시 위 형식 그대로 출력.
 """
 
             response = model.generate_content(
@@ -61,4 +85,12 @@ if uploaded_files:
 
             st.success("생성 완료!")
 
-            st.markdown(response.text)
+result = response.text
+
+st.subheader("📋 AI 생성 결과")
+
+st.text_area(
+    "결과",
+    value=result,
+    height=500
+)
