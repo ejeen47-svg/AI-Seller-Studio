@@ -100,31 +100,29 @@ if uploaded_files:
 
             result = response.text
 
-            st.success("생성 완료!")
-
-           
+                       st.success("생성 완료!")
 
             st.subheader("📋 AI 생성 결과")
 
             st.text_area(
-            "결과",
-            result,
-            height=500
+                "결과",
+                result,
+                height=500
             )
 
             st.download_button(
-            "📄 TXT 다운로드",
-            result,
-            file_name="상품정보.txt"
+                "📄 TXT 다운로드",
+                result,
+                file_name="상품정보.txt"
             )
 
             df = pd.DataFrame({
-           "내용":[result]
-            )
+                "내용": [result]
+            })
 
-           st.download_button(
-           "📊 엑셀 다운로드",
-           df.to_csv(index=False),
-           file_name="상품정보.csv",
-           mime="text/csv"
-           )
+            st.download_button(
+                "📊 엑셀 다운로드",
+                df.to_csv(index=False),
+                file_name="상품정보.csv",
+                mime="text/csv"
+            )
