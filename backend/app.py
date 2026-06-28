@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 st.title("🛒 AI Seller Studio")
-st.caption("사진 한 장으로 스마트스토어·쿠팡 상품을 자동 생성합니다.")
+st.caption("사진 여러 장으로 스마트스토어·쿠팡 상품을 자동 생성합니다.")
 
 # Gemini API Key
 try:
@@ -26,13 +26,12 @@ uploaded_files = st.file_uploader(
 
 if uploaded_files:
 
-   images = []
+    images = []
 
-for file in uploaded_files:
-    image = Image.open(file)
-    images.append(image)
-    st.image(image, width=250)
-    st.image(image, width=350)
+    for file in uploaded_files:
+        image = Image.open(file)
+        images.append(image)
+        st.image(image, width=250)
 
     if st.button("🤖 AI 상품 생성"):
 
@@ -41,7 +40,7 @@ for file in uploaded_files:
             model = genai.GenerativeModel("gemini-2.5-flash")
 
             prompt = """
-사진 속 상품을 분석하여 아래 형식으로 작성해줘.
+사진 속 상품들을 종합 분석하여 아래 형식으로 작성해줘.
 
 1. 스마트스토어 상품명
 
@@ -57,7 +56,7 @@ for file in uploaded_files:
 """
 
             response = model.generate_content(
-                [prompt, image]
+                [prompt] + images
             )
 
             st.success("생성 완료!")
